@@ -83,7 +83,7 @@ namespace SteamId {
                     throw `不正确的 SteamIdType: ${inputType}`
             }
         }
-        Universe: SteamIdUniverse = SteamIdUniverse.Public
+        Universe: SteamIdUniverse = SteamIdUniverse.Unspecified
         LastBitIs1: boolean = false
         AccountNumber: number = -1
         IsGroup: boolean = false

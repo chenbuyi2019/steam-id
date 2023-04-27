@@ -32,7 +32,7 @@ var SteamId;
     const big52 = BigInt(`52`);
     class SteamIdInfo {
         constructor(input, inputType) {
-            this.Universe = SteamIdUniverse.Public;
+            this.Universe = SteamIdUniverse.Unspecified;
             this.LastBitIs1 = false;
             this.AccountNumber = -1;
             this.IsGroup = false;
