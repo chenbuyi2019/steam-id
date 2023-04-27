@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam ID 转换</title>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            font-family: "Microsoft YaHei UI", sans-serif;
+        }
+
+        main {
+            max-width: 760px;
+            margin: 0px auto;
+        }
+
+        a {
+            color: rgb(44, 140, 172);
+        }
+
+        code,
+        textarea {
+            font-family: "Ubuntu Mono", "Noto Mono", "Consolas", monospace;
+        }
+
+        code {
+            background-color: aquamarine;
+        }
+
+        #txtInput {
+            resize: none;
+            width: 70%;
+            height: 200px;
+            display: block;
+        }
+
+        #tableIdExample td {
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Steam ID 转换</h1>
+        <p>
+            本工具适用于转换Steam个人用户和Steam组的ID ，仅是数学上的转换，不能把昵称变成数字 ID 。
+            <br><br>
+            从玩家链接获取ID64 ：在链接的末尾加上 <code>?xml=1</code> ，比如 <a href="https://steamcommunity.com/id/chenbuyi/?xml=1"
+                target="_blank">我的</a>
+            <br>
+            从Steam组获取ID64 ：在链接的末尾加上 <code>/memberslistxml/?xml=1</code> ，比如 <a
+                href="https://steamcommunity.com/groups/CrowbarTool/memberslistxml/?xml=1" target="_blank">Crowbar 组</a>
+        </p>
+        <div>
+            <label>输入的类型：</label>
+            <select id="selInputIdType">
+                <option value="id64">id64</option>
+                <option value="id32">id32</option>
+                <option value="id3">id3</option>
+                <option value="id3num">好友代码</option>
+                <option value="id3numgroup">群组代码</option>
+            </select>
+            <br>
+            <label>输出的类型：</label>
+            <select id="selOutputIdType">
+                <option value="id64">id64</option>
+                <option value="id64p">适合excel,csv的id64</option>
+                <option value="id32">id32</option>
+                <option value="id3">id3</option>
+                <option value="id3num">好友/群组代码</option>
+            </select>
+            <br>
+            <button id="butConvert">转换</button>
+        </div>
+        <p>
+            <br>
+            在下方输入要转换的 ID ，一行一个，工具会自动提取行内的数字。
+            <br>
+        </p>
+        <textarea id="txtInput"></textarea>
+        <div>
+            <h2>各种 Steam ID</h2>
+            <table id="tableIdExample">
+                <tr>
+                    <td>名字</td>
+                    <td>样本</td>
+                    <td>说明</td>
+                </tr>
+                <tr>
+                    <td>id64</td>
+                    <td>
+                        76561198099466387
+                        <br>103582791434761767
+                    </td>
+                    <td>最常用的id表达形式<br>
+                        但是太长，数字太大，excel 和 js 的默认数字类型没法处理
+                        <br>76开头的是玩家，文本长度是17
+                        <br>10开头的是群组，文本长度是18
+                    </td>
+                </tr>
+                <tr>
+                    <td>id32</td>
+                    <td>STEAM_0:1:69600329</td>
+                    <td>
+                        STEAM_0 和 STEAM_1 都是id32，并且是同一个意思。
+                        <br>只是部分场合用_0，部分场合用_1。
+                        <br>一般 Source 游戏内都是用_0
+                        <br>第一个:之后的整段才是关键信息
+                    </td>
+                </tr>
+                <tr>
+                    <td>id3</td>
+                    <td>
+                        [U:1:139200659]
+                        <br>[g:1:5240359]
+                    </td>
+                    <td>
+                        id3 也就是好友代码、群组代码<br>
+                        [U:1:打头就是用户了， [g:1: 打头就是群组。<br>
+                        第二个:之后的数字才是关键信息<br>
+                        好友代码本质上是 id32 的第三个数字乘以2的积加上第二个数字<br>
+                        玩家的完整 id3 可以直接接在 https://steamcommunity.com/profiles/ 之后作为超链接访问
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </main>
+    <script src="./steam-id.js"></script>
+</body>
+
+</html>
