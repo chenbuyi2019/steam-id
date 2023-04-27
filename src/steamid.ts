@@ -101,7 +101,7 @@ namespace SteamId {
             return big.toString()
         }
         GetId32(): string {
-            return `STEAM_${this.Universe}:${this.LastBitIs1 ? '1' : '0'}:${this.AccountNumber}`
+            return `STEAM_0:${this.LastBitIs1 ? '1' : '0'}:${this.AccountNumber}`
         }
         GetId3Number(): number {
             let n = this.AccountNumber * 2

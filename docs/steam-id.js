@@ -103,7 +103,7 @@ var SteamId;
             return big.toString();
         }
         GetId32() {
-            return `STEAM_${this.Universe}:${this.LastBitIs1 ? '1' : '0'}:${this.AccountNumber}`;
+            return `STEAM_0:${this.LastBitIs1 ? '1' : '0'}:${this.AccountNumber}`;
         }
         GetId3Number() {
             let n = this.AccountNumber * 2;
