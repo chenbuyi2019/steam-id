@@ -182,8 +182,13 @@ butConvert.addEventListener('click', function () {
             case 'id64':
                 out += id.GetId64();
                 break;
-            case 'id64url':
-                out += "https://steamcommunity.com/profiles/" + id.GetId64();
+            case 'url':
+                if (id.IsGroup) {
+                    out += "https://steamcommunity.com/gid/" + id.GetId3Number();
+                }
+                else {
+                    out += "https://steamcommunity.com/profiles/" + id.GetId64();
+                }
                 break;
             case 'id32':
                 out += id.GetId32();
