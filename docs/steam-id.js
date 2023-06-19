@@ -17,7 +17,7 @@ var SteamId;
         SteamIdUniverse[SteamIdUniverse["Dev"] = 4] = "Dev";
         SteamIdUniverse[SteamIdUniverse["RC"] = 5] = "RC";
     })(SteamIdUniverse = SteamId.SteamIdUniverse || (SteamId.SteamIdUniverse = {}));
-    const regid32 = /([0-9]):([0-1]):([0-9]+)/i;
+    const regid32 = /([0-1]):([0-9]+)/i;
     const regid64 = /([0-9]{17,})/i;
     const regid3 = /([a-z]):[0-1]:([0-9]+)/i;
     const userId64Identifier = BigInt(`76561197960265728`);
@@ -45,13 +45,13 @@ var SteamId;
             let accountnum = big0;
             switch (inputType) {
                 case SteamIdType.id32:
+                    input = input.replace("_0", "").replace("_1", "");
                     regs = regid32.exec(input);
                     if (regs == null) {
                         throw `不满足 id32 的基本格式: ${input}`;
                     }
-                    this.Universe = parseInt(regs[1]);
-                    this.LastBitIs1 = regs[2] == `1`;
-                    this.AccountNumber = parseInt(regs[3]);
+                    this.LastBitIs1 = regs[1] == `1`;
+                    this.AccountNumber = parseInt(regs[2]);
                     break;
                 case SteamIdType.id3:
                     regs = regid3.exec(input);
@@ -120,97 +120,86 @@ var SteamId;
 })(SteamId || (SteamId = {}));
 const divButtons = document.getElementById('buttons');
 const txtInput = document.getElementById("txtInput");
-const selInputIdType = document.getElementById('selInputIdType');
-const selOutputIdType = document.getElementById('selOutputIdType');
 const butConvert = document.getElementById('butConvert');
-butConvert.addEventListener('click', function () {
-    const lines = txtInput.value.split(/[\r\n]+/gi);
-    if (lines.length < 1) {
-        return;
-    }
+const txtOutput = document.getElementById('txtOutput');
+const butGotoURL = document.getElementById('butGotoURL');
+let lastUrl = "";
+function doWork() {
+    lastUrl = "";
     let inputType = SteamId.SteamIdType.id64;
-    const inputv = selInputIdType.value;
-    switch (inputv) {
-        case 'id3num':
-            inputType = SteamId.SteamIdType.id3;
-            break;
-        case 'id3numgroup':
-            inputType = SteamId.SteamIdType.id3;
-            break;
-        case 'id3':
-            inputType = SteamId.SteamIdType.id3;
-            break;
-        case 'id64':
-            inputType = SteamId.SteamIdType.id64;
-            break;
-        case 'id32':
-            inputType = SteamId.SteamIdType.id32;
-            break;
-        default:
-            alert(`无法识别的输入类型: ${inputv}`);
-            return;
-    }
-    let ids = [];
-    let errs = '';
-    for (const linestr of lines) {
-        let line = linestr.trim();
-        if (line.length > 2) {
+    const radios = document.getElementsByName("steamIdType");
+    let inputv = "";
+    for (const element of radios) {
+        const radio = element;
+        if (radio.checked) {
+            inputv = radio.value;
             switch (inputv) {
                 case 'id3num':
-                    line = `U:1:${line}`;
+                    inputType = SteamId.SteamIdType.id3;
                     break;
                 case 'id3numgroup':
-                    line = `g:1:${line}`;
+                    inputType = SteamId.SteamIdType.id3;
                     break;
+                case 'id3':
+                    inputType = SteamId.SteamIdType.id3;
+                    break;
+                case 'id64':
+                    inputType = SteamId.SteamIdType.id64;
+                    break;
+                case 'id32':
+                    inputType = SteamId.SteamIdType.id32;
+                    break;
+                default:
+                    throw `无法识别的输入类型: ${inputv}`;
             }
-            try {
-                const id = new SteamId.SteamIdInfo(line, inputType);
-                ids.push(id);
-            }
-            catch (error) {
-                errs += String(error) + '\n';
-            }
+            break;
         }
     }
+    let line = txtInput.value.trim();
+    if (line.length < 1) {
+        return "";
+    }
+    switch (inputv) {
+        case 'id3num':
+            line = `U:1:${line}`;
+            break;
+        case 'id3numgroup':
+            line = `g:1:${line}`;
+            break;
+    }
+    const id = new SteamId.SteamIdInfo(line, inputType);
     let out = '';
-    const outputv = selOutputIdType.value;
-    for (const id of ids) {
-        switch (outputv) {
-            case 'id64p':
-                out += `'` + id.GetId64();
-                break;
-            case 'id64':
-                out += id.GetId64();
-                break;
-            case 'url':
-                if (id.IsGroup) {
-                    out += "https://steamcommunity.com/gid/" + id.GetId3Number();
-                }
-                else {
-                    out += "https://steamcommunity.com/profiles/" + id.GetId64();
-                }
-                break;
-            case 'id32':
-                out += id.GetId32();
-                break;
-            case 'id3':
-                out += id.GetId3();
-                break;
-            case 'id3num':
-                out += id.GetId3Number().toString();
-                break;
-            default:
-                alert(`无法识别的输出类型: ${outputv}`);
-                return;
+    function addLine(str) {
+        if (out.length > 0) {
+            out += "\n\n";
         }
-        out += '\n';
+        out += str;
     }
-    if (errs.length > 2) {
-        alert(`无法识别：\n${errs}`);
-        return;
+    if (id.IsGroup) {
+        lastUrl = `https://steamcommunity.com/gid/${id.GetId3Number()}`;
     }
-    txtInput.value = out;
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(out);
+    else {
+        lastUrl = `https://steamcommunity.com/profiles/${id.GetId64()}`;
     }
+    addLine(lastUrl);
+    addLine(`id64: ${id.GetId64()}`);
+    addLine(`id32: ${id.GetId32()}`);
+    addLine(`id3: ${id.GetId3()}`);
+    if (id.IsGroup) {
+        addLine("群组");
+    }
+    return out;
+}
+butConvert.addEventListener('click', function () {
+    let str;
+    try {
+        str = doWork();
+    }
+    catch (error) {
+        str = "出错: " + String(error);
+    }
+    const gotUrl = lastUrl.length > 5;
+    butGotoURL.href = gotUrl ? lastUrl : "#";
+    butGotoURL.style.display = gotUrl ? "inline-block" : "none";
+    txtOutput.value = str;
 });

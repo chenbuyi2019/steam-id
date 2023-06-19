@@ -32,15 +32,30 @@
         }
 
         #txtInput {
-            resize: none;
             width: 70%;
-            height: 200px;
             display: block;
+            margin: 5px;
+        }
+
+        #txtOutput {
+            display: block;
+            margin: 5px;
+            width: 80%;
+            height: 16em;
+            resize: none;
         }
 
         #tableIdExample td {
             border-bottom: 1px solid black;
             border-right: 1px solid black;
+        }
+
+        button {
+            margin-right: 15px;
+        }
+
+        .idDescription {
+            font-size: small;
         }
     </style>
 </head>
@@ -64,33 +79,20 @@
                 href="https://steamcommunity.com/groups/CrowbarTool/memberslistxml/?xml=1" target="_blank">Crowbar 组</a>
         </p>
         <div>
-            <label>输入的类型：</label>
-            <select id="selInputIdType">
-                <option value="id64">id64</option>
-                <option value="id32">id32</option>
-                <option value="id3">id3</option>
-                <option value="id3num">好友代码</option>
-                <option value="id3numgroup">群组代码</option>
-            </select>
-            <br>
-            <label>输出的类型：</label>
-            <select id="selOutputIdType">
-                <option value="id64">id64</option>
-                <option value="id64p">适合excel,csv的id64</option>
-                <option value="url">页面链接</option>
-                <option value="id32">id32</option>
-                <option value="id3">id3</option>
-                <option value="id3num">好友/群组代码</option>
-            </select>
-            <br>
-            <button id="butConvert">转换</button>
+            输入的类型：
+            <div>
+                <input type="radio" name="steamIdType" value="id64" checked="checked">id64
+                <input type="radio" name="steamIdType" value="id32">id32
+                <input type="radio" name="steamIdType" value="id3">id3
+                <input type="radio" name="steamIdType" value="id3num">好友代码
+                <input type="radio" name="steamIdType" value="id3numgroup">群组代码
+            </div>
+            <input type="text" id="txtInput" maxlength="40">
+            <button id="butConvert">分析</button>
+            <a id="butGotoURL" style="display: none;" target="_blank" href="#">打开下面的链接</a>
+            <br><br>
+            <textarea id="txtOutput" readonly="readonly"></textarea>
         </div>
-        <p>
-            <br>
-            在下方输入要转换的 ID ，一行一个，工具会自动提取行内的数字。
-            <br>
-        </p>
-        <textarea id="txtInput"></textarea>
         <div>
             <h2>各种 Steam ID</h2>
             <table id="tableIdExample">
@@ -105,7 +107,8 @@
                         76561198099466387
                         <br>103582791434761767
                     </td>
-                    <td>最常用的id表达形式<br>
+                    <td class="idDescription">
+                        最常用的id表达形式<br>
                         但是太长，数字太大，excel 和 js 的默认数字类型没法处理
                         <br>76开头的是玩家，文本长度是17
                         <br>10开头的是群组，文本长度是18
@@ -114,11 +117,11 @@
                 <tr>
                     <td>id32</td>
                     <td>STEAM_0:1:69600329</td>
-                    <td>
+                    <td class="idDescription">
                         id32 一般只给用户使用，群组很少用。
                         <br>有时候会看见两种开头，STEAM_0 和 STEAM_1 ，其实是一样的，
                         <br>_1 意思是公开账户，_0表示不特别指定，一般也就是公开账户了。
-                        <br>一般 Source 游戏内都是用 STEAM_0 
+                        <br>一般 Source 游戏内都是用 STEAM_0
                         <br>第一个冒号之后的整段才是关键信息
                     </td>
                 </tr>
@@ -128,7 +131,7 @@
                         [U:1:139200659]
                         <br>[g:1:5240359]
                     </td>
-                    <td>
+                    <td class="idDescription">
                         id3 也就是好友代码了<br>
                         [U:1:打头就是用户了， [g:1: 打头就是群组。<br>
                         第二个冒号之后的数字才是关键信息<br>

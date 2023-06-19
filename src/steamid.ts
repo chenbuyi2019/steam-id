@@ -15,7 +15,7 @@ namespace SteamId {
         RC = 5
     }
 
-    const regid32 = /([0-9]):([0-1]):([0-9]+)/i
+    const regid32 = /([0-1]):([0-9]+)/i
     const regid64 = /([0-9]{17,})/i
     const regid3 = /([a-z]):[0-1]:([0-9]+)/i
     const userId64Identifier = BigInt(`76561197960265728`)
@@ -40,13 +40,13 @@ namespace SteamId {
             let accountnum: bigint = big0
             switch (inputType) {
                 case SteamIdType.id32:
+                    input = input.replace("_0", "").replace("_1", "")
                     regs = regid32.exec(input)
                     if (regs == null) {
                         throw `不满足 id32 的基本格式: ${input}`
                     }
-                    this.Universe = parseInt(regs[1])
-                    this.LastBitIs1 = regs[2] == `1`
-                    this.AccountNumber = parseInt(regs[3])
+                    this.LastBitIs1 = regs[1] == `1`
+                    this.AccountNumber = parseInt(regs[2])
                     break
                 case SteamIdType.id3:
                     regs = regid3.exec(input)
