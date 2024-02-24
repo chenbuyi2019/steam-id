@@ -8,6 +8,23 @@ const butGotoURL = document.getElementById('butGotoURL') as HTMLAnchorElement
 
 let lastUrl = ""
 
+function getTypeFromTypeName(s: string): SteamId.SteamIdType {
+    switch (s) {
+        case 'id3num':
+            return SteamId.SteamIdType.id3
+        case 'id3numgroup':
+            return SteamId.SteamIdType.id3
+        case 'id3':
+            return SteamId.SteamIdType.id3
+        case 'id64':
+            return SteamId.SteamIdType.id64
+        case 'id32':
+            return SteamId.SteamIdType.id32
+        default:
+            throw `无法识别的输入类型: ${s}`
+    }
+}
+
 function doWork(): string {
     lastUrl = ""
     let inputType: SteamId.SteamIdType = SteamId.SteamIdType.id64
@@ -17,25 +34,7 @@ function doWork(): string {
         const radio = element as HTMLInputElement
         if (radio.checked) {
             inputv = radio.value
-            switch (inputv) {
-                case 'id3num':
-                    inputType = SteamId.SteamIdType.id3
-                    break
-                case 'id3numgroup':
-                    inputType = SteamId.SteamIdType.id3
-                    break
-                case 'id3':
-                    inputType = SteamId.SteamIdType.id3
-                    break
-                case 'id64':
-                    inputType = SteamId.SteamIdType.id64
-                    break
-                case 'id32':
-                    inputType = SteamId.SteamIdType.id32
-                    break
-                default:
-                    throw `无法识别的输入类型: ${inputv}`
-            }
+            inputType = getTypeFromTypeName(inputv)
             break;
         }
     }
@@ -67,7 +66,9 @@ function doWork(): string {
     addLine(`id32: ${id.GetId32()}`)
     addLine(`id3: ${id.GetId3()}`)
     if (id.IsGroup) {
-        addLine("群组")
+        addLine(`群组代码: ${id.GetId3Number()}`)
+    } else {
+        addLine(`好友代码: ${id.GetId3Number()}`)
     }
     return out;
 }

@@ -1,4 +1,89 @@
 "use strict";
+const butConvertBatch = document.getElementById("butConvertBatch");
+const txtBatch = document.getElementById("txtBatch");
+function ConvertBatch() {
+    let inputType = SteamId.SteamIdType.id64;
+    let radios = document.getElementsByName("steamIdType2");
+    let inputv = "";
+    for (const element of radios) {
+        const radio = element;
+        if (radio.checked) {
+            inputv = radio.value;
+            inputType = getTypeFromTypeName(radio.value);
+            break;
+        }
+    }
+    let outputType = "";
+    radios = document.getElementsByName("steamIdType3");
+    for (const element of radios) {
+        const radio = element;
+        if (radio.checked) {
+            outputType = radio.value;
+            break;
+        }
+    }
+    let raw = txtBatch.value.trim();
+    if (raw.length < 1) {
+        return "";
+    }
+    let lines = raw.split("\n");
+    let output = "";
+    function addLine(str) {
+        if (output.length > 0) {
+            output += "\n";
+        }
+        output += str;
+    }
+    for (const lineraw of lines) {
+        let line = lineraw.trim();
+        if (line.length < 1) {
+            addLine("");
+            continue;
+        }
+        switch (inputv) {
+            case 'id3num':
+                line = `U:1:${line}`;
+                break;
+            case 'id3numgroup':
+                line = `g:1:${line}`;
+                break;
+        }
+        try {
+            const id = new SteamId.SteamIdInfo(line, inputType);
+            switch (outputType) {
+                case "id64":
+                    addLine(id.GetId64());
+                    break;
+                case "id32":
+                    addLine(id.GetId32());
+                    break;
+                case "id3":
+                    addLine(id.GetId3());
+                    break;
+                case "id3num":
+                    addLine(id.GetId3Number().toString());
+                    break;
+                default:
+                    addLine("未知类型 " + outputType);
+                    break;
+            }
+        }
+        catch (error) {
+            addLine(`错误 ${line} ${error}`);
+        }
+    }
+    return output.trim();
+}
+butConvertBatch.addEventListener("click", function () {
+    let str;
+    try {
+        str = ConvertBatch();
+    }
+    catch (error) {
+        str = "出错: " + String(error);
+    }
+    txtBatch.value = str;
+});
 var SteamId;
 (function (SteamId) {
     let SteamIdType;
@@ -124,6 +209,22 @@ const butConvert = document.getElementById('butConvert');
 const txtOutput = document.getElementById('txtOutput');
 const butGotoURL = document.getElementById('butGotoURL');
 let lastUrl = "";
+function getTypeFromTypeName(s) {
+    switch (s) {
+        case 'id3num':
+            return SteamId.SteamIdType.id3;
+        case 'id3numgroup':
+            return SteamId.SteamIdType.id3;
+        case 'id3':
+            return SteamId.SteamIdType.id3;
+        case 'id64':
+            return SteamId.SteamIdType.id64;
+        case 'id32':
+            return SteamId.SteamIdType.id32;
+        default:
+            throw `无法识别的输入类型: ${s}`;
+    }
+}
 function doWork() {
     lastUrl = "";
     let inputType = SteamId.SteamIdType.id64;
@@ -133,25 +234,7 @@ function doWork() {
         const radio = element;
         if (radio.checked) {
             inputv = radio.value;
-            switch (inputv) {
-                case 'id3num':
-                    inputType = SteamId.SteamIdType.id3;
-                    break;
-                case 'id3numgroup':
-                    inputType = SteamId.SteamIdType.id3;
-                    break;
-                case 'id3':
-                    inputType = SteamId.SteamIdType.id3;
-                    break;
-                case 'id64':
-                    inputType = SteamId.SteamIdType.id64;
-                    break;
-                case 'id32':
-                    inputType = SteamId.SteamIdType.id32;
-                    break;
-                default:
-                    throw `无法识别的输入类型: ${inputv}`;
-            }
+            inputType = getTypeFromTypeName(inputv);
             break;
         }
     }
@@ -186,7 +269,10 @@ function doWork() {
     addLine(`id32: ${id.GetId32()}`);
     addLine(`id3: ${id.GetId3()}`);
     if (id.IsGroup) {
-        addLine("群组");
+        addLine(`群组代码: ${id.GetId3Number()}`);
+    }
+    else {
+        addLine(`好友代码: ${id.GetId3Number()}`);
     }
     return out;
 }

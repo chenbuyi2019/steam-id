@@ -37,7 +37,7 @@
             margin: 5px;
         }
 
-        #txtOutput {
+        textarea {
             display: block;
             margin: 5px;
             width: 80%;
@@ -94,7 +94,28 @@
             <textarea id="txtOutput" readonly="readonly"></textarea>
         </div>
         <div>
-            <h2>各种 Steam ID</h2>
+            <h2>批量转换</h2>
+            输入的类型：
+            <div>
+                <input type="radio" name="steamIdType2" value="id64" checked="checked">id64
+                <input type="radio" name="steamIdType2" value="id32">id32
+                <input type="radio" name="steamIdType2" value="id3">id3
+                <input type="radio" name="steamIdType2" value="id3num">好友代码
+                <input type="radio" name="steamIdType2" value="id3numgroup">群组代码
+            </div>
+            输出的类型：
+            <div>
+                <input type="radio" name="steamIdType3" value="id64" checked="checked">id64
+                <input type="radio" name="steamIdType3" value="id32">id32
+                <input type="radio" name="steamIdType3" value="id3">id3
+                <input type="radio" name="steamIdType3" value="id3num">好友/群组代码
+            </div>
+            <button id="butConvertBatch">转换</button>
+            <br><br>
+            <textarea id="txtBatch"></textarea>
+        </div>
+        <div>
+            <h2>各种 Steam ID 示例</h2>
             <table id="tableIdExample">
                 <tr>
                     <td>名字</td>
